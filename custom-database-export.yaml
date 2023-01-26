@@ -1,0 +1,28 @@
+custom-database-export:
+  connection:
+    host: xyz
+    username: 'ENV:DB_USER'
+    password: 'ENV:DB_PASASWORD'
+    dbname: test
+
+  structure:
+    skip: false
+  #  tableInclude:
+  #    - 'no regex here example_table'
+  #    tableExclude:
+  #      - 'regex here .*'
+  data:
+    skip: false
+#    tableInclude:
+#      - 'no regex here example_table'
+    tableExclude:
+      - 'cf_.*'
+      - 'cache_.*'
+      - '[bf]e_sessions'
+      - 'sys_refindex'
+    faker:
+      tablename:
+        fieldName: FakerName
+    pseudonymization:
+      tablename:
+        fieldName: FakerName

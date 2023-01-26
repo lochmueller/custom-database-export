@@ -1,0 +1,14 @@
+{
+    "name": "lochmueller/custom-database-export",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Lochmueller\\CustomDatabaseExport\\": "src/"
+        }
+    },
+    "require": {
+        "druidfi/mysqldump-php": "^1.0",
+        "symfony/yaml": "^6.2",
+        "symfony/console": "^6.2"
+    }
+}
