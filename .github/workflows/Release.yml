@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.1"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1"
+
+      - name: "Prepare project"
+        run: |
+          composer install
+
+      - name: "Install PHIVE"
+        uses: szepeviktor/phive@v1
+
+      - name: "Build phar"
+        run: |
+          phive install humbug/box
+          box build
+
+      - name: 'Upload artifcats'
+        uses: actions/upload-artifact@v3
+        with:
+          name: custom-database-export.phar
+          path: bin/custom-database-export.phar

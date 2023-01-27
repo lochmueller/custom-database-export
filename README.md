@@ -18,3 +18,10 @@ Check `custom-database-export.yaml` after the init process.
 ## Tech-Talk
 
 Use [druidfi/mysqldump-php](https://github.com/druidfi/mysqldump-php) for export the information and symfony [yaml](https://symfony.com/doc/current/components/yaml.html) & [console](https://symfony.com/doc/current/components/console.html) component for configuration and CLI management. Feel free to send contributions via GitHub.
+
+
+## ToDo:
+
+- Target file handling incl. GZIP
+- Box Building in GitHub Actions
+- faker / wheres / limits integration and documentation
