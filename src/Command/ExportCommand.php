@@ -2,6 +2,7 @@
 
 namespace Lochmueller\CustomDatabaseExport\Command;
 
+use Druidfi\Mysqldump\Compress\CompressManagerFactory;
 use Druidfi\Mysqldump\Mysqldump;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -38,22 +39,29 @@ class ExportCommand extends Command
             return Command::INVALID;
         }
 
-        var_dump($this->addCredentials($configuration, []));
+        $targetFilename = $configuration['target']['fileName'] ?? 'php://stdout';
+        $exportFiles = [];
 
         if (!($configuration['structure']['skip'] ?? false)) {
-            $output->writeln('Start DB structure to structure.sql');
 
             // Structure
             $settings = [
                 'no-data' => true,
                 'add-drop-table' => true,
+                'compress' => $configuration['target']['compress'] ?? 'None',
                 'include-tables' => $configuration['structure']['tableInclude'] ?? [],
                 'exclude-tables' => $configuration['structure']['tableExclude'] ?? [],
             ];
 
             try {
                 $dumper = new Mysqldump(...$this->addCredentials($configuration, $settings));
-                $dumper->start('structure.sql');
+
+                if ($targetFilename === 'php://stdout') {
+                    $dumper->start($targetFilename);
+                } else {
+                    $dumper->start($targetFilename . 'structure.sql');
+                    $exportFiles[] = $targetFilename . '.structure.sql';
+                }
             } catch (\Exception $exception) {
                 $output->writeln('Could not create structure file: ' . $exception->getMessage());
                 return Command::FAILURE;
@@ -61,35 +69,63 @@ class ExportCommand extends Command
         }
 
         if (!($configuration['data']['skip'] ?? false)) {
-            $output->writeln('Start DB structure to data.sql');
-
             // Data
             $settings = [
                 'no-create-info' => true,
+                'compress' => $configuration['target']['compress'] ?? 'None',
                 'include-tables' => $configuration['data']['tableInclude'] ?? [],
-                'exclude-tables' => $configuration['data']['tableExclude'] ?? [],
+                'exclude-tables' => array_merge($configuration['structure']['tableExclude'] ?? [], $configuration['data']['tableExclude'] ?? []),
             ];
 
-
-            var_dump($configuration['data']);
-            // where
-            #$dumper->setTableWheres([
-            #    'users' => 'date_registered > NOW() - INTERVAL 3 MONTH AND deleted=0',
-            #    'logs' => 'date_logged > NOW() - INTERVAL 1 DAY',
-            #    'posts' => 'isLive=1'
-            #]);
-
+            $fakerConfiguration = $configuration['data']['faker'] ?? [];
 
             try {
                 $dumper = new Mysqldump(...$this->addCredentials($configuration, $settings));
-                $dumper->start('data.sql');
+
+                $dumper->setTableLimits($configuration['data']['limits'] ?? []);
+                $dumper->setTableWheres($configuration['data']['wheres'] ?? []);
+                if (!empty($fakerConfiguration)) {
+                    $dumper->setTransformTableRowHook(function (string $tableName, array $row) use ($fakerConfiguration) {
+                        // var_dump($tableName);
+                        return $row;
+                    });
+                }
+
+                if ($targetFilename === 'php://stdout') {
+                    $dumper->start($targetFilename);
+                } else {
+                    $dumper->start($targetFilename . 'data.sql');
+                    $exportFiles[] = $targetFilename . '.data.sql';
+                }
             } catch (\Exception $exception) {
                 $output->writeln('Could not create data file: ' . $exception->getMessage());
                 return Command::FAILURE;
             }
         }
 
+        if (!empty($exportFiles)) {
+            // @todo Handle file Merge
+
+            if (str_ends_with($targetFilename, '.gz')) {
+                $output = CompressManagerFactory::create(CompressManagerFactory::GZIP);
+            } else {
+                $output = CompressManagerFactory::create(CompressManagerFactory::NONE);
+            }
+
+            $output->open($targetFilename);
+            $output->write($this->getContent($exportFiles));
+
+            var_dump($exportFiles);
+        }
+
         return Command::SUCCESS;
+    }
+
+    protected function getContent(array $exportFiles)
+    {
+        return implode("\n", array_map(function (string $fileName) {
+            return file_get_contents($fileName);
+        }, $exportFiles));
     }
 
     protected function addCredentials(array $configuration, array $settings): array

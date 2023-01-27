@@ -8,13 +8,13 @@ custom-database-export:
 
   # ---- Structure configuration (optional). Describe the include and exclude list for the data structure export
   # ---- If no includes are defined, all tables are used and only the tableExclude is checked. tableExclude support
-  # ---- regex syntax. Note: The excludes of the structure export are automatically also used for the data export.
+  # ---- perl regex syntax. Note: The excludes of the structure export are automatically also used for the data export.
   structure:
     skip: false
     #tableInclude:
-    # - 'no regex here example_table'
+    # - 'no regex here, only simple table names'
     tableExclude:
-      - 'zzz\_.*'
+      - '/zzz\_.*/'
 
   # ---- Data configuration. Configure the data selection of the export. tablesInclude & tablesExclude see above.
   # ---- Details for the special options directly at the configuration below.
@@ -23,16 +23,22 @@ custom-database-export:
     #tableInclude:
     # - 'no regex here example_table'
     tableExclude:
-      - 'cf_.*'
-      - 'cache_.*'
-      - '[bf]e_sessions'
+      - '/cf_.*/'
+      - '/cache_.*/'
+      - '/[bf]e_sessions/'
       - 'sys_refindex'
+    # ---- TDB: Describe Faker
     faker:
       tablename:
         fieldName: FakerName
-    pseudonymization:
-      tablename:
-        fieldName: FakerName
-#    where:
-#    limits:
 
+    # ---- TDB: Describe Wheres
+    #wheres:
+
+    # ---- TDB: Describe Limits
+    #limits:
+
+  # ---- TDB: Target
+  target:
+    fileName: 'php://stdout'
+    compress: None

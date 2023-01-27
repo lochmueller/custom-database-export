@@ -19,9 +19,14 @@ class InitCommand extends Command
         $baseFile = dirname(__DIR__, 2) . '/res/custom-database-export.yaml.dist';
         $targetFile = 'custom-database-export.yaml';
 
+        if (is_file($targetFile)) {
+            $output->writeln('Target file already exists!');
+            return Command::INVALID;
+        }
+
         $output->writeln('Copy ' . $baseFile . ' to ' . $targetFile);
 
-        return Command::SUCCESS;
+        return copy($baseFile, $targetFile) ? Command::SUCCESS : Command::FAILURE;
     }
 
 }

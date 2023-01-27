@@ -1,3 +1,4 @@
 /vendor/
 /.idea/
 /bin/*.phar
+/custom-database-export.yaml
