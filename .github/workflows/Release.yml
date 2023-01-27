@@ -36,6 +36,7 @@ jobs:
         run: |
           box validate || exit 1
           box compile  || exit 1
+          mv bin/custom-database-export.phar custom-database-export.phar
 
       - name: Geting Tag Name
         id: get-version
@@ -51,5 +52,5 @@ jobs:
           tag: ${{ steps.get-version.outputs.version }}
           body: 'Next stable release.'
           allowUpdates: true
-          artifacts: bin/custom-database-export.phar
+          artifacts: custom-database-export.phar
           artifactContentType: application/x-php
