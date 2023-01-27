@@ -2,3 +2,5 @@
 /.idea/
 /bin/*.phar
 /custom-database-export.yaml
+*.sql.gz
+*.sql

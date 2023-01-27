@@ -27,18 +27,24 @@ custom-database-export:
       - '/cache_.*/'
       - '/[bf]e_sessions/'
       - 'sys_refindex'
+
     # ---- TDB: Describe Faker
     faker:
-      tablename:
-        fieldName: FakerName
+      sys_log:
+        IP: FAKE:ipv4
 
     # ---- TDB: Describe Wheres
-    #wheres:
+    wheres:
+      sys_log: 1=1 ORDER BY uid DESC
+      sys_history: 1=1 ORDER BY uid DESC
 
     # ---- TDB: Describe Limits
-    #limits:
+    limits:
+      sys_log: 200
+      sys_history: 200
 
-  # ---- TDB: Target
+  # ---- Target file configuration. You can use 'php://stdout' or a direct filename for the export. stdout only
+  # ---- without compression. Compression options are 'None', 'Gzip' and 'Bzip2'
   target:
     fileName: 'php://stdout'
     compress: None

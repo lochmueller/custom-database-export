@@ -23,15 +23,33 @@ jobs:
         run: |
           composer install
 
-      - name: "Build phar"
+      - name: Install Box
         run: |
-          wget -O phive.phar "https://phar.io/releases/phive.phar"
-          chmod +x phive.phar
-          phive.phar install humbug/box
-          box build
+          wget \
+            "https://github.com/humbug/box/releases/download/4.2.0/box.phar" \
+            --quiet \
+            -O ./box
+          chmod +x ./box
+          sudo mv ./box /usr/local/bin
 
-      - name: 'Upload artifcats'
-        uses: actions/upload-artifact@v3
+      - name: Build Application PHAR
+        run: |
+          box validate || exit 1
+          box compile  || exit 1
+
+      - name: Geting Tag Name
+        id: get-version
+        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/}
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
         with:
-          name: custom-database-export.phar
-          path: bin/custom-database-export.phar
+          # This token is provided by GitHub Actions.
+          # You DO NOT need to create your own token.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ steps.get-version.outputs.version }}
+          tag: ${{ steps.get-version.outputs.version }}
+          body: 'Next stable release.'
+          allowUpdates: true
+          artifacts: bin/custom-database-export.phar
+          artifactContentType: application/x-php

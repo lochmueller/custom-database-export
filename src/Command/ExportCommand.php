@@ -40,6 +40,7 @@ class ExportCommand extends Command
         }
 
         $targetFilename = $configuration['target']['fileName'] ?? 'php://stdout';
+        $compression = $configuration['target']['compress'] ?? 'None';
         $exportFiles = [];
 
         if (!($configuration['structure']['skip'] ?? false)) {
@@ -48,7 +49,7 @@ class ExportCommand extends Command
             $settings = [
                 'no-data' => true,
                 'add-drop-table' => true,
-                'compress' => $configuration['target']['compress'] ?? 'None',
+                'compress' => 'None', // $compression
                 'include-tables' => $configuration['structure']['tableInclude'] ?? [],
                 'exclude-tables' => $configuration['structure']['tableExclude'] ?? [],
             ];
@@ -59,8 +60,8 @@ class ExportCommand extends Command
                 if ($targetFilename === 'php://stdout') {
                     $dumper->start($targetFilename);
                 } else {
-                    $dumper->start($targetFilename . 'structure.sql');
-                    $exportFiles[] = $targetFilename . '.structure.sql';
+                    $dumper->start($targetFilename . '_structure.sql');
+                    $exportFiles[] = $targetFilename . '_structure.sql';
                 }
             } catch (\Exception $exception) {
                 $output->writeln('Could not create structure file: ' . $exception->getMessage());
@@ -72,7 +73,7 @@ class ExportCommand extends Command
             // Data
             $settings = [
                 'no-create-info' => true,
-                'compress' => $configuration['target']['compress'] ?? 'None',
+                'compress' => 'None', // $compression
                 'include-tables' => $configuration['data']['tableInclude'] ?? [],
                 'exclude-tables' => array_merge($configuration['structure']['tableExclude'] ?? [], $configuration['data']['tableExclude'] ?? []),
             ];
@@ -86,7 +87,9 @@ class ExportCommand extends Command
                 $dumper->setTableWheres($configuration['data']['wheres'] ?? []);
                 if (!empty($fakerConfiguration)) {
                     $dumper->setTransformTableRowHook(function (string $tableName, array $row) use ($fakerConfiguration) {
-                        // var_dump($tableName);
+                        if (array_key_exists($tableName, $fakerConfiguration)) {
+                            return $this->modifyRecordByFaker($row, (array) $fakerConfiguration[$tableName]);
+                        }
                         return $row;
                     });
                 }
@@ -94,8 +97,8 @@ class ExportCommand extends Command
                 if ($targetFilename === 'php://stdout') {
                     $dumper->start($targetFilename);
                 } else {
-                    $dumper->start($targetFilename . 'data.sql');
-                    $exportFiles[] = $targetFilename . '.data.sql';
+                    $dumper->start($targetFilename . '_data.sql');
+                    $exportFiles[] = $targetFilename . '_data.sql';
                 }
             } catch (\Exception $exception) {
                 $output->writeln('Could not create data file: ' . $exception->getMessage());
@@ -104,21 +107,45 @@ class ExportCommand extends Command
         }
 
         if (!empty($exportFiles)) {
-            // @todo Handle file Merge
-
-            if (str_ends_with($targetFilename, '.gz')) {
-                $output = CompressManagerFactory::create(CompressManagerFactory::GZIP);
-            } else {
-                $output = CompressManagerFactory::create(CompressManagerFactory::NONE);
-            }
-
+            $output = CompressManagerFactory::create($compression);
             $output->open($targetFilename);
             $output->write($this->getContent($exportFiles));
+            $output->close();
 
-            var_dump($exportFiles);
+            foreach ($exportFiles as $exportFile) {
+                unlink($exportFile);
+            }
         }
 
         return Command::SUCCESS;
+    }
+
+    protected function modifyRecordByFaker(array $row, array $configuration): array
+    {
+        foreach ($configuration as $field => $target) {
+            if (array_key_exists($field, $row)) {
+                $row[$field] = $this->modifyFieldByFaker($row[$field], $target);
+            }
+        }
+
+        return $row;
+    }
+
+    protected function modifyFieldByFaker($originalValue, $target)
+    {
+        if (str_starts_with($target, 'FAKE:')) {
+            return $this->getFakeValue($originalValue, substr($target, 5));
+        }
+        return $target;
+    }
+
+    protected function getFakeValue($originalValue, $fakerType)
+    {
+        $faker = \Faker\Factory::create();
+        if (!is_callable([$faker, $fakerType])) {
+            throw new \Exception('Faker ' . $fakerType . ' is not callable', 12368);
+        }
+        return $faker->$fakerType();
     }
 
     protected function getContent(array $exportFiles)

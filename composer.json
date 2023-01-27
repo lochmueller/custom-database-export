@@ -9,6 +9,7 @@
     "require": {
         "druidfi/mysqldump-php": "^1.0",
         "symfony/yaml": "^6.2",
-        "symfony/console": "^6.2"
+        "symfony/console": "^6.2",
+        "fakerphp/faker": "^1.21"
     }
 }
