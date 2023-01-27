@@ -23,22 +23,11 @@ jobs:
         run: |
           composer install
 
-      - name: "Install PHIVE"
-        uses: szepeviktor/phive@v1
-        with:
-          home: "${{ runner.temp }}/.phive"
-          binPath: "${{ github.workspace }}/tools/phive"
-
-      - name: "Install PHP tools with PHIVE"
-        uses: "szepeviktor/phive-install@v1"
-        with:
-          home: "${{ runner.temp }}/.phive"
-          binPath: "${{ github.workspace }}/tools/phive"
-          trustGpgKeys: "4AA394086372C20A,CF1A108D0E7AE720,E82B2FB314E9906E"
-
       - name: "Build phar"
         run: |
-          phive install humbug/box
+          wget -O phive.phar "https://phar.io/releases/phive.phar"
+          chmod +x phive.phar
+          phive.phar install humbug/box
           box build
 
       - name: 'Upload artifcats'
