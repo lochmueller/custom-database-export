@@ -1,0 +1,16 @@
+name: custom-database-export
+recipe: lamp
+config:
+  database: mariadb:10.6
+  php: '8.1'
+
+services:
+  appserver:
+    overrides:
+      environment:
+        DB_USER: lamp
+        DB_PASSWORD: lamp
+tooling:
+  custom-database-export:
+    service: appserver
+    cmd: ./bin/custom-database-export.php

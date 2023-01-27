@@ -38,6 +38,8 @@ class ExportCommand extends Command
             return Command::INVALID;
         }
 
+        var_dump($this->addCredentials($configuration, []));
+
         if (!($configuration['structure']['skip'] ?? false)) {
             $output->writeln('Start DB structure to structure.sql');
 
@@ -58,7 +60,6 @@ class ExportCommand extends Command
             }
         }
 
-
         if (!($configuration['data']['skip'] ?? false)) {
             $output->writeln('Start DB structure to data.sql');
 
@@ -70,7 +71,13 @@ class ExportCommand extends Command
             ];
 
 
-            var_dump($configuration);
+            var_dump($configuration['data']);
+            // where
+            #$dumper->setTableWheres([
+            #    'users' => 'date_registered > NOW() - INTERVAL 3 MONTH AND deleted=0',
+            #    'logs' => 'date_logged > NOW() - INTERVAL 1 DAY',
+            #    'posts' => 'isLive=1'
+            #]);
 
 
             try {
