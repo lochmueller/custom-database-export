@@ -25,11 +25,20 @@ jobs:
 
       - name: "Install PHIVE"
         uses: szepeviktor/phive@v1
+        with:
+          home: "${{ runner.temp }}/.phive"
+          binPath: "${{ github.workspace }}/tools/phive"
+
+      - name: "Install PHP tools with PHIVE"
+        uses: "szepeviktor/phive-install@v1"
+        with:
+          home: "${{ runner.temp }}/.phive"
+          binPath: "${{ github.workspace }}/tools/phive"
+          trustGpgKeys: "4AA394086372C20A,CF1A108D0E7AE720,E82B2FB314E9906E"
+        run: phive install humbug/box
 
       - name: "Build phar"
-        run: |
-          phive install humbug/box
-          box build
+        run: box build
 
       - name: 'Upload artifcats'
         uses: actions/upload-artifact@v3
