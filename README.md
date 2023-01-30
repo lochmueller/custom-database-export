@@ -5,11 +5,11 @@
 
 ## Installation
 
-1. Download the last phar file of "Custom Database Export"
+1. Download the [latest released phar](https://github.com/lochmueller/custom-database-export/releases) file of "Custom Database Export"
 2. `chmod +x custom-database-export.phar` and (optional) create a alias for the execution (e.g. if you need a special PHP version)
 3. Run `custom-database-export init` to create the configuration file incl. the documentation
 4. Adapt the configuration for your needs
-5. Export the database with `custom-database-export` (optional `--configuration` argument for the configuration file path)
+5. Export the database with `custom-database-export` (optional `--configuration` argument for the configuration file path - default: `custom-database-export.yaml`)
 
 ## Configuration
 
