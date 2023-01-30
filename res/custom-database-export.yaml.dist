@@ -28,17 +28,22 @@ custom-database-export:
       - '/[bf]e_sessions/'
       - 'sys_refindex'
 
-    # ---- TDB: Describe Faker
+    # ---- You can simulate or overwrite values. Just define the table name and field name and set the value of all entries
+    # ---- to the given value. If the value start with FAKE you can access PHP Faker functions to generate random values.
+    # ---- Example: FAKE:ipv4 will call this method: https://fakerphp.github.io/formatters/internet/#ipv4
     faker:
       sys_log:
         IP: FAKE:ipv4
 
-    # ---- TDB: Describe Wheres
+    # ---- You can define the WHERE clause for the selection to reduce the data to the right set of information. This part
+    # ---- is added at the end of the Query, so you can also use sorting, if you limit (see below) the data and you need
+    # ---- the end of the table.
     wheres:
       sys_log: 1=1 ORDER BY uid DESC
       sys_history: 1=1 ORDER BY uid DESC
 
-    # ---- TDB: Describe Limits
+    # ---- Limit the data information on the given table to reduce the size of the dump. You can define the limit, but
+    # ---- also limit & offset.
     limits:
       sys_log: 200
       sys_history: 200

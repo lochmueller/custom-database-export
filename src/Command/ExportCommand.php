@@ -5,13 +5,10 @@ namespace Lochmueller\CustomDatabaseExport\Command;
 use Druidfi\Mysqldump\Compress\CompressManagerFactory;
 use Druidfi\Mysqldump\Mysqldump;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
-
 
 class ExportCommand extends Command
 {
@@ -26,10 +23,8 @@ class ExportCommand extends Command
             ->addOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'Configuration file', 'custom-database-export.yaml');
     }
 
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
         $configurationFile = $input->getOption('configuration');
 
         try {

@@ -17,9 +17,11 @@ Check `custom-database-export.yaml` after the init process.
 
 ## Tech-Talk
 
-Use [druidfi/mysqldump-php](https://github.com/druidfi/mysqldump-php) for export the information and symfony [yaml](https://symfony.com/doc/current/components/yaml.html) & [console](https://symfony.com/doc/current/components/console.html) component for configuration and CLI management. Feel free to send contributions via GitHub. Override value information with [Faker](https://fakerphp.github.io/).
+Use [druidfi/mysqldump-php](https://github.com/druidfi/mysqldump-php) for export the information and symfony [yaml](https://symfony.com/doc/current/components/yaml.html) & [console](https://symfony.com/doc/current/components/console.html) component for configuration and CLI management. Override value information with [Faker](https://fakerphp.github.io/) - only de_DE & en_GB is found in the phar file.
+
+Feel free to send contributions via GitHub.
 
 ## ToDo:
 
 - Box Building in GitHub Actions
-- faker / wheres / limits integration and documentation
+- Output overwrite None & GZIP
