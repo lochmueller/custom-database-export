@@ -3,7 +3,7 @@ custom-database-export:
   connection:
     host: xyz
     username: 'ENV:DB_USER'
-    password: 'ENV:DB_PASASWORD'
+    password: 'ENV:DB_PASSWORD'
     dbname: test
 
   # ---- Structure configuration (optional). Describe the include and exclude list for the data structure export
