@@ -1,15 +1,59 @@
 {
-    "name": "lochmueller/custom-database-export",
-    "type": "project",
-    "autoload": {
-        "psr-4": {
-            "Lochmueller\\CustomDatabaseExport\\": "src/"
-        }
-    },
-    "require": {
-        "druidfi/mysqldump-php": "^1.0",
-        "symfony/yaml": "^6.2",
-        "symfony/console": "^6.2",
-        "fakerphp/faker": "^1.21"
+  "name": "lochmueller/custom-database-export",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Lochmueller\\CustomDatabaseExport\\": "src/"
     }
+  },
+  "require": {
+    "php": "^8.0",
+    "druidfi/mysqldump-php": "^1.0",
+    "symfony/yaml": "^6.2",
+    "symfony/console": "^6.2",
+    "fakerphp/faker": "^1.21",
+    "cweagans/composer-patches": "^1.7"
+  },
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
+  },
+  "extra": {
+    "patches": {
+      "druidfi/mysqldump-php": {
+        "Patch mysqldumper to overwrite the io process (private -> protected)": "./patch/mysqldump.patch"
+      }
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@remove-unused-files"
+    ],
+    "remove-unused-files": [
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/a*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/b*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/c*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/d*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/el*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/es*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/et*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/f*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/h*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/i*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/j*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/k*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/l*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/j*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/m*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/n*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/p*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/r*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/s*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/t*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/u*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/v*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/z*"
+    ]
+  }
 }

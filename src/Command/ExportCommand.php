@@ -4,6 +4,7 @@ namespace Lochmueller\CustomDatabaseExport\Command;
 
 use Druidfi\Mysqldump\Compress\CompressManagerFactory;
 use Druidfi\Mysqldump\Mysqldump;
+use Lochmueller\CustomDatabaseExport\Dumper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -44,20 +45,14 @@ class ExportCommand extends Command
             $settings = [
                 'no-data' => true,
                 'add-drop-table' => true,
-                'compress' => 'None', // $compression
+                'compress' => $compression,
                 'include-tables' => $configuration['structure']['tableInclude'] ?? [],
                 'exclude-tables' => $configuration['structure']['tableExclude'] ?? [],
             ];
 
             try {
-                $dumper = new Mysqldump(...$this->addCredentials($configuration, $settings));
-
-                if ($targetFilename === 'php://stdout') {
-                    $dumper->start($targetFilename);
-                } else {
-                    $dumper->start($targetFilename . '_structure.sql');
-                    $exportFiles[] = $targetFilename . '_structure.sql';
-                }
+                $dumper = new Dumper(...$this->addCredentials($configuration, $settings));
+                $dumper->start($targetFilename);
             } catch (\Exception $exception) {
                 $output->writeln('Could not create structure file: ' . $exception->getMessage());
                 return Command::FAILURE;
@@ -68,7 +63,7 @@ class ExportCommand extends Command
             // Data
             $settings = [
                 'no-create-info' => true,
-                'compress' => 'None', // $compression
+                'compress' => $compression,
                 'include-tables' => $configuration['data']['tableInclude'] ?? [],
                 'exclude-tables' => array_merge($configuration['structure']['tableExclude'] ?? [], $configuration['data']['tableExclude'] ?? []),
             ];
@@ -76,7 +71,7 @@ class ExportCommand extends Command
             $fakerConfiguration = $configuration['data']['faker'] ?? [];
 
             try {
-                $dumper = new Mysqldump(...$this->addCredentials($configuration, $settings));
+                $dumper = new Dumper(...$this->addCredentials($configuration, $settings));
 
                 $dumper->setTableLimits($configuration['data']['limits'] ?? []);
                 $dumper->setTableWheres($configuration['data']['wheres'] ?? []);
@@ -89,28 +84,18 @@ class ExportCommand extends Command
                     });
                 }
 
-                if ($targetFilename === 'php://stdout') {
-                    $dumper->start($targetFilename);
-                } else {
-                    $dumper->start($targetFilename . '_data.sql');
-                    $exportFiles[] = $targetFilename . '_data.sql';
-                }
+                $dumper->start($targetFilename);
             } catch (\Exception $exception) {
                 $output->writeln('Could not create data file: ' . $exception->getMessage());
                 return Command::FAILURE;
             }
         }
 
-        if (!empty($exportFiles)) {
-            $output = CompressManagerFactory::create($compression);
-            $output->open($targetFilename);
-            $output->write($this->getContent($exportFiles));
-            $output->close();
-
-            foreach ($exportFiles as $exportFile) {
-                unlink($exportFile);
-            }
+        if(!($dumper instanceof Dumper)){
+            return Command::FAILURE;
         }
+
+        $dumper->ioFinish();
 
         return Command::SUCCESS;
     }

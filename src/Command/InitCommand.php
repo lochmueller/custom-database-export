@@ -16,6 +16,7 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $baseFile = dirname(__DIR__, 2) . '/res/custom-database-export.yaml.dist';
+        $baseContent = file_get_contents($baseFile);
         $targetFile = 'custom-database-export.yaml';
 
         if (is_file($targetFile)) {
@@ -25,7 +26,7 @@ class InitCommand extends Command
 
         $output->writeln('Copy ' . $baseFile . ' to ' . $targetFile);
 
-        return copy($baseFile, $targetFile) ? Command::SUCCESS : Command::FAILURE;
+        return file_put_contents($targetFile, $baseContent) !== false ? Command::SUCCESS : Command::FAILURE;
     }
 
 }
