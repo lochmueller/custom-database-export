@@ -15,6 +15,7 @@
     "cweagans/composer-patches": "^1.7"
   },
   "config": {
+    "classmap-authoritative": true,
     "allow-plugins": {
       "cweagans/composer-patches": true
     }
@@ -27,7 +28,7 @@
     }
   },
   "scripts": {
-    "post-autoload-dump": [
+    "pre-autoload-dump": [
       "@remove-unused-files"
     ],
     "remove-unused-files": [
@@ -38,6 +39,17 @@
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/el*",
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/es*",
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/et*",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_AU",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_CA",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_GB",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_HK",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_IN",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_NG",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_NZ",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_PH",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_SG",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_UG",
+      "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/en_ZA",
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/f*",
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/h*",
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/i*",

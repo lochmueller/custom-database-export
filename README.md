@@ -1,7 +1,7 @@
 # Custom Database Export
 
 > CLI to download databases with separated configuration for structure and data, to exclude tables, limit data and/or replace special values in the export.
-> Specialized in export databases to fit the rules of GDPR. 
+> Specialized in export databases to fit the rules of GDPR and keep the filesize small. Less storage, less energy :)
 
 ## Installation
 
@@ -13,15 +13,14 @@
 
 ## Configuration
 
-Check `custom-database-export.yaml` after the init process.
+Check `custom-database-export.yaml` after the init process. The base file is a copy of [this yaml](https://github.com/lochmueller/custom-database-export/blob/main/res/custom-database-export.yaml.dist).
 
 ## Tech-Talk
 
-Use [druidfi/mysqldump-php](https://github.com/druidfi/mysqldump-php) for export the information and symfony [yaml](https://symfony.com/doc/current/components/yaml.html) & [console](https://symfony.com/doc/current/components/console.html) component for configuration and CLI management. Override value information with [Faker](https://fakerphp.github.io/) - only de_DE & en_GB is found in the phar file.
+Use [druidfi/mysqldump-php](https://github.com/druidfi/mysqldump-php) for export the information and symfony [yaml](https://symfony.com/doc/current/components/yaml.html) & [console](https://symfony.com/doc/current/components/console.html) component for configuration and CLI management. Override value information with [Faker](https://fakerphp.github.io/) (only en_US locale is part of the phar file).
 
 Feel free to send contributions via GitHub.
 
 ## ToDo:
 
 - Box Building in GitHub Actions
-- Output overwrite None & GZIP

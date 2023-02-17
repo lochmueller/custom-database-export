@@ -1,3 +1,6 @@
 {
-  "main": "bin/custom-database-export.php"
+  "main": "bin/custom-database-export.php",
+  "files": [
+    "res/custom-database-export.yaml.dist"
+  ]
 }

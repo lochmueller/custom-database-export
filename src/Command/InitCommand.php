@@ -24,7 +24,8 @@ class InitCommand extends Command
             return Command::INVALID;
         }
 
-        $output->writeln('Copy ' . $baseFile . ' to ' . $targetFile);
+        $output->writeln('Copy base configuration file to ' . $targetFile);
+        $output->writeln('Please check the configuration (incl. documentation) and adapt the file for your needs.');
 
         return file_put_contents($targetFile, $baseContent) !== false ? Command::SUCCESS : Command::FAILURE;
     }
