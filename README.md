@@ -20,7 +20,3 @@ Check `custom-database-export.yaml` after the init process. The base file is a c
 Use [druidfi/mysqldump-php](https://github.com/druidfi/mysqldump-php) for export the information and symfony [yaml](https://symfony.com/doc/current/components/yaml.html) & [console](https://symfony.com/doc/current/components/console.html) component for configuration and CLI management. Override value information with [Faker](https://fakerphp.github.io/) (only en_US locale is part of the phar file) and pack the phar with [humbug/box](https://github.com/box-project/box).
 
 Feel free to send contributions via GitHub.
-
-## ToDo:
-
-- Box Building in GitHub Actions
