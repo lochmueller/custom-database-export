@@ -1,5 +1,6 @@
 {
   "main": "bin/custom-database-export.php",
+  "compression": "GZ",
   "files": [
     "res/custom-database-export.yaml.dist"
   ]
