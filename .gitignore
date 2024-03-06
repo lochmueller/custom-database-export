@@ -4,3 +4,4 @@
 /custom-database-export.yaml
 *.sql.gz
 *.sql
+.DS_Store

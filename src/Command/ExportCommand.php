@@ -37,7 +37,6 @@ class ExportCommand extends Command
 
         $targetFilename = $configuration['target']['fileName'] ?? 'php://stdout';
         $compression = $configuration['target']['compress'] ?? 'None';
-        $exportFiles = [];
 
         if (!($configuration['structure']['skip'] ?? false)) {
 

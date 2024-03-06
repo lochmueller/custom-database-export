@@ -12,12 +12,12 @@ jobs:
       contents: write
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v4"
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
 
@@ -28,7 +28,7 @@ jobs:
       - name: Install Box
         run: |
           wget \
-            "https://github.com/humbug/box/releases/download/4.2.0/box.phar" \
+            "https://github.com/humbug/box/releases/download/4.6.1/box.phar" \
             --quiet \
             -O ./box
           chmod +x ./box
