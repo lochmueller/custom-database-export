@@ -1,16 +1,29 @@
 name: custom-database-export
-recipe: lamp
-config:
-  database: mariadb:10.6
-  php: '8.2'
 
 services:
-  appserver:
-    overrides:
-      environment:
-        DB_USER: lamp
-        DB_PASSWORD: lamp
+  php:
+    type: php:8.2
+    via: nginx:1.27
+  mariadb1011:
+    type: mariadb:10.11
+    portforward: 3600
+    creds:
+      user: lamp
+      password: lamp
+      database: database
+  mysql84:
+    type: mysql:8.4
+    portforward: 3601
+    creds:
+      user: lamp
+      password: lamp
+      database: database
+  phpmyadmin:
+    type: phpmyadmin:5.2
+    hosts:
+      - mariadb1011
+      - mysql84
 tooling:
   custom-database-export:
-    service: appserver
+    service: php
     cmd: ./bin/custom-database-export.php

@@ -4,6 +4,7 @@ namespace Lochmueller\CustomDatabaseExport\Command;
 
 use Druidfi\Mysqldump\Compress\CompressManagerFactory;
 use Druidfi\Mysqldump\Mysqldump;
+use Lochmueller\CustomDatabaseExport\Compress\CompressWrapper;
 use Lochmueller\CustomDatabaseExport\Dumper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class ExportCommand extends Command
 {
-    public function __construct(string $name = null)
+    public function __construct(?string $name = null)
     {
         parent::__construct('export');
     }
@@ -38,19 +39,24 @@ class ExportCommand extends Command
         $targetFilename = $configuration['target']['fileName'] ?? 'php://stdout';
         $compression = $configuration['target']['compress'] ?? 'None';
 
+        // Init Wrapper class
+        CompressWrapper::start($compression);
+        CompressManagerFactory::$methods[] = 'Wrapper';
+        class_alias(CompressWrapper::class, 'Druidfi\\Mysqldump\\Compress\\CompressWrapper');
+
         if (!($configuration['structure']['skip'] ?? false)) {
 
             // Structure
             $settings = [
                 'no-data' => true,
                 'add-drop-table' => true,
-                'compress' => $compression,
+                'compress' => 'Wrapper',
                 'include-tables' => $configuration['structure']['tableInclude'] ?? [],
                 'exclude-tables' => $configuration['structure']['tableExclude'] ?? [],
             ];
 
             try {
-                $dumper = new Dumper(...$this->addCredentials($configuration, $settings));
+                $dumper = new Mysqldump(...$this->addCredentials($configuration, $settings));
                 $dumper->start($targetFilename);
             } catch (\Exception $exception) {
                 $output->writeln('Could not create structure file: ' . $exception->getMessage());
@@ -62,7 +68,7 @@ class ExportCommand extends Command
             // Data
             $settings = [
                 'no-create-info' => true,
-                'compress' => $compression,
+                'compress' => 'Wrapper',
                 'include-tables' => $configuration['data']['tableInclude'] ?? [],
                 'exclude-tables' => array_merge($configuration['structure']['tableExclude'] ?? [], $configuration['data']['tableExclude'] ?? []),
             ];
@@ -70,14 +76,14 @@ class ExportCommand extends Command
             $fakerConfiguration = $configuration['data']['faker'] ?? [];
 
             try {
-                $dumper = new Dumper(...$this->addCredentials($configuration, $settings));
+                $dumper = new Mysqldump(...$this->addCredentials($configuration, $settings));
 
                 $dumper->setTableLimits($configuration['data']['limits'] ?? []);
                 $dumper->setTableWheres($configuration['data']['wheres'] ?? []);
                 if (!empty($fakerConfiguration)) {
                     $dumper->setTransformTableRowHook(function (string $tableName, array $row) use ($fakerConfiguration) {
                         if (array_key_exists($tableName, $fakerConfiguration)) {
-                            return $this->modifyRecordByFaker($row, (array) $fakerConfiguration[$tableName]);
+                            return $this->modifyRecordByFaker($row, (array)$fakerConfiguration[$tableName]);
                         }
                         return $row;
                     });
@@ -90,11 +96,11 @@ class ExportCommand extends Command
             }
         }
 
-        if(!($dumper instanceof Dumper)){
+        if (!($dumper instanceof Dumper)) {
             return Command::FAILURE;
         }
 
-        $dumper->ioFinish();
+        CompressWrapper::finish();
 
         return Command::SUCCESS;
     }
@@ -147,7 +153,7 @@ class ExportCommand extends Command
     protected function resolveValue(string $value): string
     {
         if (str_starts_with($value, 'ENV:')) {
-            return (string) getenv(substr($value, 4));
+            return (string)getenv(substr($value, 4));
         }
         return $value;
     }

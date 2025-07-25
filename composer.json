@@ -8,24 +8,13 @@
   },
   "require": {
     "php": "^8.2",
-    "druidfi/mysqldump-php": "2.0.0-beta1",
-    "symfony/yaml": "^7.0",
-    "symfony/console": "^7.0",
-    "fakerphp/faker": "^1.21",
-    "cweagans/composer-patches": "^1.7"
+    "druidfi/mysqldump-php": "2.0.0",
+    "symfony/yaml": "^7.3",
+    "symfony/console": "^7.3",
+    "fakerphp/faker": "^1.24"
   },
   "config": {
-    "classmap-authoritative": true,
-    "allow-plugins": {
-      "cweagans/composer-patches": true
-    }
-  },
-  "extra": {
-    "patches": {
-      "druidfi/mysqldump-php": {
-        "Patch mysqldumper to overwrite the io process (private -> protected)": "./patch/mysqldump.patch"
-      }
-    }
+    "classmap-authoritative": true
   },
   "scripts": {
     "pre-autoload-dump": [
