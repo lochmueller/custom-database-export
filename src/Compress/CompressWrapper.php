@@ -10,7 +10,7 @@ class CompressWrapper implements CompressInterface
     private static CompressInterface $io;
     private static bool $alreadyOpen = false;
 
-    public static function start(string $compression)
+    public static function start(string $compression): void
     {
         self::$io = CompressManagerFactory::create($compression);
     }
@@ -38,7 +38,7 @@ class CompressWrapper implements CompressInterface
 
     public function close(): bool
     {
-        // Nothing to do here, because the stream is closed via finish method
+        // Nothing to do here, because the stream is closed via finish-method
         return true;
     }
 }

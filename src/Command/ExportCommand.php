@@ -4,8 +4,8 @@ namespace Lochmueller\CustomDatabaseExport\Command;
 
 use Druidfi\Mysqldump\Compress\CompressManagerFactory;
 use Druidfi\Mysqldump\Mysqldump;
+use Faker\Factory;
 use Lochmueller\CustomDatabaseExport\Compress\CompressWrapper;
-use Lochmueller\CustomDatabaseExport\Dumper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,6 +14,9 @@ use Symfony\Component\Yaml\Yaml;
 
 class ExportCommand extends Command
 {
+    protected const DEFAULT_FILE_NAME = 'php://stdout';
+    protected const DEFAULT_COMPRESSION = 'None';
+
     public function __construct(?string $name = null)
     {
         parent::__construct('export');
@@ -22,7 +25,7 @@ class ExportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'Configuration file', 'custom-database-export.yaml');
+            ->addOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'Path to the configuration file', 'custom-database-export.yaml');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -36,16 +39,16 @@ class ExportCommand extends Command
             return Command::INVALID;
         }
 
-        $targetFilename = $configuration['target']['fileName'] ?? 'php://stdout';
-        $compression = $configuration['target']['compress'] ?? 'None';
+        $targetFilename = $configuration['target']['fileName'] ?? self::DEFAULT_FILE_NAME;
+        $compression = $configuration['target']['compress'] ?? self::DEFAULT_COMPRESSION;
 
         // Init Wrapper class
         CompressWrapper::start($compression);
         CompressManagerFactory::$methods[] = 'Wrapper';
         class_alias(CompressWrapper::class, 'Druidfi\\Mysqldump\\Compress\\CompressWrapper');
 
+        $dumper = null;
         if (!($configuration['structure']['skip'] ?? false)) {
-
             // Structure
             $settings = [
                 'no-data' => true,
@@ -96,7 +99,7 @@ class ExportCommand extends Command
             }
         }
 
-        if (!($dumper instanceof Dumper)) {
+        if (!($dumper instanceof Mysqldump)) {
             return Command::FAILURE;
         }
 
@@ -126,18 +129,11 @@ class ExportCommand extends Command
 
     protected function getFakeValue($originalValue, $fakerType)
     {
-        $faker = \Faker\Factory::create();
+        $faker = Factory::create();
         if (!is_callable([$faker, $fakerType])) {
             throw new \Exception('Faker ' . $fakerType . ' is not callable', 12368);
         }
         return $faker->$fakerType();
-    }
-
-    protected function getContent(array $exportFiles)
-    {
-        return implode("\n", array_map(function (string $fileName) {
-            return file_get_contents($fileName);
-        }, $exportFiles));
     }
 
     protected function addCredentials(array $configuration, array $settings): array
@@ -157,5 +153,4 @@ class ExportCommand extends Command
         }
         return $value;
     }
-
 }

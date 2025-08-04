@@ -9,9 +9,8 @@ use Symfony\Component\Console\Application;
 
 $application = new Application();
 
-$command = new ExportCommand();
 $application = new Application();
-$application->add($command);
+$application->add(new ExportCommand());
 $application->add(new InitCommand());
-$application->setDefaultCommand($command->getName());
+$application->setDefaultCommand('export');
 $application->run();

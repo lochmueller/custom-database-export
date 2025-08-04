@@ -29,5 +29,4 @@ class InitCommand extends Command
 
         return file_put_contents($targetFile, $baseContent) !== false ? Command::SUCCESS : Command::FAILURE;
     }
-
 }

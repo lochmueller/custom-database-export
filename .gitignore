@@ -5,3 +5,5 @@
 *.sql.gz
 *.sql
 .DS_Store
+/.php-cs-fixer.cache
+/custom-database-export.phar

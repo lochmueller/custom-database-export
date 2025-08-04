@@ -25,5 +25,14 @@ services:
       - mysql84
 tooling:
   custom-database-export:
+    description: Execute the export directly (without box build process).
     service: php
     cmd: ./bin/custom-database-export.php
+  custom-database-export-phar:
+    description: Execute the export as phar file. Keep in mind, that the file is not part of the repo. It is an artifact.
+    service: php
+    cmd: ./custom-database-export.phar
+  code-fix:
+    description: Fix code against coding standards
+    service: php
+    cmd: composer code-fix

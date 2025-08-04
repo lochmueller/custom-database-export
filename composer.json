@@ -55,6 +55,10 @@
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/u*",
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/v*",
       "rm -rf ./vendor/fakerphp/faker/src/Faker/Provider/z*"
-    ]
+    ],
+    "code-fix": ["php-cs-fixer fix"]
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.85"
   }
 }
