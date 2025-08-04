@@ -24,6 +24,9 @@ services:
       - mariadb1011
       - mysql84
 tooling:
+  composer:
+    description: Run composer in the container
+    service: php
   custom-database-export:
     description: Execute the export directly (without box build process).
     service: php
